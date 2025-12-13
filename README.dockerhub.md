@@ -18,7 +18,16 @@ podman run -d --network=host --name opt-api rastadidi/optnc-fiber-eligibility
 http :8080/health
 ```
 
-**⚠️ Note importante :** L'option `--network=host` est requise pour permettre à Chromium d'accéder au site OPT-NC.
+**⚠️ Note importante :** L'option `--network=host` est **obligatoire** pour permettre à Chromium d'accéder au site OPT-NC. Sans cette option, le scraping échouera et vous n'obtiendrez que des données partielles.
+
+### 🔍 Pourquoi --network=host ?
+
+Le conteneur utilise **Chromium en mode headless** pour scraper les données du site OPT-NC. Chromium a besoin d'un accès réseau complet pour :
+- Se connecter au site web OPT
+- Charger les pages et formulaires
+- Soumettre les requêtes de vérification
+
+Sans `--network=host`, vous obtiendrez une erreur `ERR_NETWORK_CHANGED` et une réponse JSON incomplète (sans données fiber/ADSL/FAI).
 
 ## 📚 Swagger UI
 
