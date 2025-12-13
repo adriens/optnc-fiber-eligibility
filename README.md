@@ -2,6 +2,8 @@
 
 
 ![Go](https://img.shields.io/badge/Go-1.21-00ADD8?style=flat&logo=go)
+![Docker](https://img.shields.io/docker/v/rastadidi/optnc-fiber-eligibility?style=flat&logo=docker&label=Docker%20Hub)
+![Docker Image Size](https://img.shields.io/docker/image-size/rastadidi/optnc-fiber-eligibility?style=flat&logo=docker)
 ![Swagger](https://img.shields.io/badge/Swagger-OpenAPI_3.0-85EA2D?style=flat&logo=swagger)
 ![Alpine](https://img.shields.io/badge/Alpine-3.19-0D597F?style=flat&logo=alpine-linux)
 ![API](https://img.shields.io/badge/API-REST-blue?style=flat)
@@ -9,7 +11,7 @@
 
 **🚀 API REST de vérification d'éligibilité à la fibre optique OPT Nouvelle-Calédonie**
 
-📚 **[Documentation Swagger Interactive](http://localhost:8080/swagger/)** | 🐳 **Podman/Docker** | 🔧 **Taskfile**
+📚 **[Documentation Swagger Interactive](http://localhost:8080/swagger/)** | 🐳 **[Docker Hub](https://hub.docker.com/r/rastadidi/optnc-fiber-eligibility)** | 🔧 **Taskfile**
 
 Service de vérification d'éligibilité à la fibre optique OPT Nouvelle-Calédonie.
 
@@ -64,9 +66,23 @@ go run ./cmd/api api 8080
 podman run -p 8080:8080 optnc-fiber-eligibility
 ```
 
-## 🐳 Podman
+## 🐳 Podman / Docker
 
-### Build
+**🚀 Image disponible sur Docker Hub :** [rastadidi/optnc-fiber-eligibility](https://hub.docker.com/r/rastadidi/optnc-fiber-eligibility)
+
+### Utiliser l'image Docker Hub (recommandé)
+
+```bash
+# Avec Podman
+podman pull rastadidi/optnc-fiber-eligibility:latest
+podman run -d -p 8080:8080 --name opt-api rastadidi/optnc-fiber-eligibility
+
+# Avec Docker
+docker pull rastadidi/optnc-fiber-eligibility:latest
+docker run -d -p 8080:8080 --name opt-api rastadidi/optnc-fiber-eligibility
+```
+
+### Build local
 
 ```bash
 podman build -t optnc-fiber-eligibility .
