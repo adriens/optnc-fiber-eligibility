@@ -1,0 +1,208 @@
+basePath: /
+definitions:
+  api.APIErrorResponse:
+    properties:
+      error:
+        example: not_found
+        type: string
+      message:
+        example: Numéro introuvable
+        type: string
+    type: object
+  api.APISuccessResponse:
+    properties:
+      data:
+        $ref: '#/definitions/models.EligibilityResult'
+      success:
+        example: true
+        type: boolean
+    type: object
+  models.ADSLEligibility:
+    properties:
+      message:
+        type: string
+      status:
+        $ref: '#/definitions/models.EligibilityStatus'
+    type: object
+  models.EligibilityResult:
+    properties:
+      adsl:
+        $ref: '#/definitions/models.ADSLEligibility'
+      checked_at:
+        type: string
+      contact_phone:
+        type: string
+      error_message:
+        type: string
+      fiber:
+        $ref: '#/definitions/models.FiberEligibility'
+      found:
+        type: boolean
+      isp_providers:
+        items:
+          $ref: '#/definitions/models.ISPProvider'
+        type: array
+      phone_number:
+        type: string
+      raw_html:
+        type: string
+    type: object
+  models.EligibilityStatus:
+    enum:
+    - eligible
+    - non-eligible
+    - unknown
+    - not-found
+    type: string
+    x-enum-varnames:
+    - StatusEligible
+    - StatusNotEligible
+    - StatusUnknown
+    - StatusNotFound
+  models.FiberEligibility:
+    properties:
+      available:
+        type: boolean
+      installation:
+        type: string
+      message:
+        type: string
+      status:
+        $ref: '#/definitions/models.EligibilityStatus'
+    type: object
+  models.ISPProvider:
+    properties:
+      logo:
+        type: string
+      name:
+        type: string
+      url:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    name: Support API
+    url: https://www.opt.nc
+  description: |-
+    API de vérification d'éligibilité à la fibre optique OPT Nouvelle-Calédonie
+
+    Cette API permet de vérifier l'éligibilité d'un numéro de téléphone fixe à la fibre optique.
+
+    ## Codes HTTP
+    - **200 OK** : Numéro trouvé et vérifié (éligible ou non)
+    - **400 Bad Request** : Paramètre manquant ou validation échouée
+    - **404 Not Found** : Numéro inexistant dans la base OPT
+    - **405 Method Not Allowed** : Seuls GET et POST acceptés
+  license:
+    name: MIT
+  title: OPT-NC Fiber Eligibility API
+  version: "1.0"
+paths:
+  /api/v1/eligibility:
+    get:
+      consumes:
+      - application/json
+      description: |-
+        Vérifie si un numéro de téléphone fixe est éligible à la fibre optique OPT-NC
+
+        ### Codes de retour
+        - **200** : Numéro trouvé et vérifié (éligible ou non à la fibre)
+        - **400** : Paramètre manquant ou format invalide
+        - **404** : Numéro introuvable dans la base OPT
+        - **405** : Méthode HTTP non supportée
+      parameters:
+      - description: Numéro de téléphone (GET)
+        example: "257364"
+        in: query
+        name: phone
+        type: string
+      - description: Numéro de téléphone (POST)
+        in: body
+        name: request
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Numéro trouvé et vérifié
+          schema:
+            $ref: '#/definitions/api.APISuccessResponse'
+        "400":
+          description: Erreur de validation
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "404":
+          description: Numéro introuvable
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "405":
+          description: Méthode non autorisée
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+      summary: Vérifier l'éligibilité à la fibre
+      tags:
+      - eligibility
+    post:
+      consumes:
+      - application/json
+      description: |-
+        Vérifie si un numéro de téléphone fixe est éligible à la fibre optique OPT-NC
+
+        ### Codes de retour
+        - **200** : Numéro trouvé et vérifié (éligible ou non à la fibre)
+        - **400** : Paramètre manquant ou format invalide
+        - **404** : Numéro introuvable dans la base OPT
+        - **405** : Méthode HTTP non supportée
+      parameters:
+      - description: Numéro de téléphone (GET)
+        example: "257364"
+        in: query
+        name: phone
+        type: string
+      - description: Numéro de téléphone (POST)
+        in: body
+        name: request
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Numéro trouvé et vérifié
+          schema:
+            $ref: '#/definitions/api.APISuccessResponse'
+        "400":
+          description: Erreur de validation
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "404":
+          description: Numéro introuvable
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "405":
+          description: Méthode non autorisée
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+      summary: Vérifier l'éligibilité à la fibre
+      tags:
+      - eligibility
+  /health:
+    get:
+      description: Vérifie que l'API est en ligne et fonctionnelle
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: API is healthy
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Health check endpoint
+      tags:
+      - health
+schemes:
+- http
+- https
+swagger: "2.0"

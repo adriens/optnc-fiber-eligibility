@@ -1,0 +1,277 @@
+{
+    "schemes": [
+        "http",
+        "https"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "API de vérification d'éligibilité à la fibre optique OPT Nouvelle-Calédonie\n\nCette API permet de vérifier l'éligibilité d'un numéro de téléphone fixe à la fibre optique.\n\n## Codes HTTP\n- **200 OK** : Numéro trouvé et vérifié (éligible ou non)\n- **400 Bad Request** : Paramètre manquant ou validation échouée\n- **404 Not Found** : Numéro inexistant dans la base OPT\n- **405 Method Not Allowed** : Seuls GET et POST acceptés",
+        "title": "OPT-NC Fiber Eligibility API",
+        "contact": {
+            "name": "Support API",
+            "url": "https://www.opt.nc"
+        },
+        "license": {
+            "name": "MIT"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/api/v1/eligibility": {
+            "get": {
+                "description": "Vérifie si un numéro de téléphone fixe est éligible à la fibre optique OPT-NC\n\n### Codes de retour\n- **200** : Numéro trouvé et vérifié (éligible ou non à la fibre)\n- **400** : Paramètre manquant ou format invalide\n- **404** : Numéro introuvable dans la base OPT\n- **405** : Méthode HTTP non supportée",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "eligibility"
+                ],
+                "summary": "Vérifier l'éligibilité à la fibre",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "257364",
+                        "description": "Numéro de téléphone (GET)",
+                        "name": "phone",
+                        "in": "query"
+                    },
+                    {
+                        "description": "Numéro de téléphone (POST)",
+                        "name": "request",
+                        "in": "body",
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Numéro trouvé et vérifié",
+                        "schema": {
+                            "$ref": "#/definitions/api.APISuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Erreur de validation",
+                        "schema": {
+                            "$ref": "#/definitions/api.APIErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Numéro introuvable",
+                        "schema": {
+                            "$ref": "#/definitions/api.APIErrorResponse"
+                        }
+                    },
+                    "405": {
+                        "description": "Méthode non autorisée",
+                        "schema": {
+                            "$ref": "#/definitions/api.APIErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Vérifie si un numéro de téléphone fixe est éligible à la fibre optique OPT-NC\n\n### Codes de retour\n- **200** : Numéro trouvé et vérifié (éligible ou non à la fibre)\n- **400** : Paramètre manquant ou format invalide\n- **404** : Numéro introuvable dans la base OPT\n- **405** : Méthode HTTP non supportée",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "eligibility"
+                ],
+                "summary": "Vérifier l'éligibilité à la fibre",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "257364",
+                        "description": "Numéro de téléphone (GET)",
+                        "name": "phone",
+                        "in": "query"
+                    },
+                    {
+                        "description": "Numéro de téléphone (POST)",
+                        "name": "request",
+                        "in": "body",
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Numéro trouvé et vérifié",
+                        "schema": {
+                            "$ref": "#/definitions/api.APISuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Erreur de validation",
+                        "schema": {
+                            "$ref": "#/definitions/api.APIErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Numéro introuvable",
+                        "schema": {
+                            "$ref": "#/definitions/api.APIErrorResponse"
+                        }
+                    },
+                    "405": {
+                        "description": "Méthode non autorisée",
+                        "schema": {
+                            "$ref": "#/definitions/api.APIErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/health": {
+            "get": {
+                "description": "Vérifie que l'API est en ligne et fonctionnelle",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "health"
+                ],
+                "summary": "Health check endpoint",
+                "responses": {
+                    "200": {
+                        "description": "API is healthy",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "api.APIErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "not_found"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Numéro introuvable"
+                }
+            }
+        },
+        "api.APISuccessResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/models.EligibilityResult"
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
+        "models.ADSLEligibility": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/models.EligibilityStatus"
+                }
+            }
+        },
+        "models.EligibilityResult": {
+            "type": "object",
+            "properties": {
+                "adsl": {
+                    "$ref": "#/definitions/models.ADSLEligibility"
+                },
+                "checked_at": {
+                    "type": "string"
+                },
+                "contact_phone": {
+                    "type": "string"
+                },
+                "error_message": {
+                    "type": "string"
+                },
+                "fiber": {
+                    "$ref": "#/definitions/models.FiberEligibility"
+                },
+                "found": {
+                    "type": "boolean"
+                },
+                "isp_providers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ISPProvider"
+                    }
+                },
+                "phone_number": {
+                    "type": "string"
+                },
+                "raw_html": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.EligibilityStatus": {
+            "type": "string",
+            "enum": [
+                "eligible",
+                "non-eligible",
+                "unknown",
+                "not-found"
+            ],
+            "x-enum-varnames": [
+                "StatusEligible",
+                "StatusNotEligible",
+                "StatusUnknown",
+                "StatusNotFound"
+            ]
+        },
+        "models.FiberEligibility": {
+            "type": "object",
+            "properties": {
+                "available": {
+                    "type": "boolean"
+                },
+                "installation": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/models.EligibilityStatus"
+                }
+            }
+        },
+        "models.ISPProvider": {
+            "type": "object",
+            "properties": {
+                "logo": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

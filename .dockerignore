@@ -1,0 +1,28 @@
+# Binaires
+bin/
+opt-eligibility
+*.exe
+
+# Go
+*.o
+*.a
+*.so
+vendor/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+/tmp/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test
+coverage.out

@@ -1,0 +1,178 @@
+version: '3'
+
+vars:
+  IMAGE_NAME: optnc-fiber-eligibility
+  CONTAINER_NAME: opt-eligibility-api
+  PORT: 8080
+
+tasks:
+  default:
+    desc: Build the container image (default task)
+    cmds:
+      - task: build
+
+  build:
+    desc: Build the Podman image
+    cmds:
+      - echo "🔨 Building image {{.IMAGE_NAME}}..."
+      - podman build -t {{.IMAGE_NAME}} .
+      - echo "✅ Image {{.IMAGE_NAME}} built successfully"
+      - podman images {{.IMAGE_NAME}}
+
+  run:
+    desc: Run the API container
+    cmds:
+      - echo "🚀 Starting container {{.CONTAINER_NAME}}..."
+      - podman run -d -p {{.PORT}}:8080 --name {{.CONTAINER_NAME}} {{.IMAGE_NAME}}
+      - sleep 3
+      - echo "✅ Container started on port {{.PORT}}"
+      - echo "📡 Health check - http://localhost:{{.PORT}}/health"
+      - echo "🔍 Eligibility - http://localhost:{{.PORT}}/api/v1/eligibility?phone=257364"
+
+  stop:
+    desc: Stop and remove the container
+    cmds:
+      - echo "🛑 Stopping container {{.CONTAINER_NAME}}..."
+      - podman stop {{.CONTAINER_NAME}} || true
+      - podman rm {{.CONTAINER_NAME}} || true
+      - echo "✅ Container stopped and removed"
+
+  restart:
+    desc: Restart the container (stop, build, run)
+    cmds:
+      - task: stop
+      - task: build
+      - task: run
+
+  logs:
+    desc: Show container logs
+    cmds:
+      - podman logs {{.CONTAINER_NAME}}
+
+  logs-follow:
+    desc: Follow container logs
+    cmds:
+      - podman logs -f {{.CONTAINER_NAME}}
+
+  test:
+    desc: Test the API endpoints
+    cmds:
+      - echo "🧪 Testing health endpoint..."
+      - curl -s http://localhost:{{.PORT}}/health | jq .
+      - echo ""
+      - echo "🧪 Testing eligibility endpoint..."
+      - curl -s "http://localhost:{{.PORT}}/api/v1/eligibility?phone=257364" | jq .
+
+  test-httpie:
+    desc: Test the API with HTTPie
+    cmds:
+      - echo "🧪 Testing with HTTPie..."
+      - http GET :{{.PORT}}/health
+      - echo ""
+      - http GET :{{.PORT}}/api/v1/eligibility phone==257364
+
+  clean:
+    desc: Clean up images and containers
+    cmds:
+      - task: stop
+      - echo "🧹 Removing image {{.IMAGE_NAME}}..."
+      - podman rmi {{.IMAGE_NAME}} || true
+      - echo "✅ Cleanup complete"
+
+  cli:
+    desc: "Run in CLI mode (usage - task cli -- 257364)"
+    cmds:
+      - podman run --rm {{.IMAGE_NAME}} {{.CLI_ARGS}}
+
+  cli-local:
+    desc: "Run CLI locally without container (usage - task cli-local -- 257364)"
+    cmds:
+      - go run ./cmd/api {{.CLI_ARGS}}
+
+  dev:
+    desc: Run API locally for development
+    cmds:
+      - echo "🔧 Starting development server on port {{.PORT}}..."
+      - go run ./cmd/api api {{.PORT}}
+
+  build-binary:
+    desc: Build the binary locally
+    cmds:
+      - echo "🔨 Building binary..."
+      - mkdir -p bin
+      - go build -o bin/opt-eligibility ./cmd/api
+      - echo "✅ Binary built - bin/opt-eligibility"
+      - ls -lh bin/opt-eligibility
+
+  install:
+    desc: Install dependencies
+    cmds:
+      - echo "📦 Installing Go dependencies..."
+      - go mod download
+      - go mod tidy
+      - echo "✅ Dependencies installed"
+
+  fmt:
+    desc: Format Go code
+    cmds:
+      - echo "🎨 Formatting code..."
+      - go fmt ./...
+      - echo "✅ Code formatted"
+
+  vet:
+    desc: Run go vet
+    cmds:
+      - echo "🔍 Running go vet..."
+      - go vet ./...
+      - echo "✅ No issues found"
+
+  lint:
+    desc: Run all checks (fmt, vet)
+    cmds:
+      - task: fmt
+      - task: vet
+
+  compose-up:
+    desc: Start with podman-compose
+    cmds:
+      - echo "🚀 Starting with podman-compose..."
+      - podman-compose up -d
+      - sleep 3
+      - echo "✅ Services started"
+      - podman-compose ps
+
+  compose-down:
+    desc: Stop podman-compose services
+    cmds:
+      - echo "🛑 Stopping services..."
+      - podman-compose down
+      - echo "✅ Services stopped"
+
+  compose-logs:
+    desc: Show podman-compose logs
+    cmds:
+      - podman-compose logs -f
+
+  ps:
+    desc: Show running containers
+    cmds:
+      - podman ps
+
+  images:
+    desc: Show local images
+    cmds:
+      - podman images
+
+  help:
+    desc: Show available tasks
+    cmds:
+      - task --list
+
+
+  swagger:
+    desc: Generate Swagger documentation
+    cmds:
+      - echo "📚 Generating Swagger docs..."
+      - swag init -g cmd/api/main.go --output docs
+      - echo "✅ Swagger docs generated in docs/"
+      - echo "📖 View at http://localhost:8080/swagger/ (when API is running)"
