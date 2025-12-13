@@ -23,9 +23,10 @@ tasks:
     desc: Run the API container
     cmds:
       - echo "🚀 Starting container {{.CONTAINER_NAME}}..."
-      - podman run -d -p {{.PORT}}:8080 --name {{.CONTAINER_NAME}} {{.IMAGE_NAME}}
+      - podman run -d --network=host --name {{.CONTAINER_NAME}} {{.IMAGE_NAME}}
       - sleep 3
       - echo "✅ Container started on port {{.PORT}}"
+      - echo "⚠️  Using --network=host (required for Chromium scraping)"
       - echo "📡 Health check - http://localhost:{{.PORT}}/health"
       - echo "🔍 Eligibility - http://localhost:{{.PORT}}/api/v1/eligibility?phone=257364"
 
@@ -176,3 +177,20 @@ tasks:
       - swag init -g cmd/api/main.go --output docs
       - echo "✅ Swagger docs generated in docs/"
       - echo "📖 View at http://localhost:8080/swagger/ (when API is running)"
+
+  docker-login:
+    desc: Login to Docker Hub
+    cmds:
+      - echo "🔐 Login to Docker Hub..."
+      - podman login docker.io
+
+  docker-push:
+    desc: Push image to Docker Hub (rastadidi)
+    cmds:
+      - echo "🏷️ Tagging images..."
+      - podman tag optnc-fiber-eligibility:latest docker.io/rastadidi/optnc-fiber-eligibility:latest
+      - podman tag optnc-fiber-eligibility:latest docker.io/rastadidi/optnc-fiber-eligibility:v1.0.0
+      - echo "📤 Pushing to Docker Hub..."
+      - podman push docker.io/rastadidi/optnc-fiber-eligibility:latest
+      - podman push docker.io/rastadidi/optnc-fiber-eligibility:v1.0.0
+      - echo "✅ Images pushed to https://hub.docker.com/r/rastadidi/optnc-fiber-eligibility"

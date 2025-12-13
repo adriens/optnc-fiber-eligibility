@@ -73,14 +73,12 @@ podman run -p 8080:8080 optnc-fiber-eligibility
 ### Utiliser l'image Docker Hub (recommandé)
 
 ```bash
-# Avec Podman
+# Avec Podman (nécessite --network=host pour le scraping)
 podman pull rastadidi/optnc-fiber-eligibility:latest
-podman run -d -p 8080:8080 --name opt-api rastadidi/optnc-fiber-eligibility
-
-# Avec Docker
-docker pull rastadidi/optnc-fiber-eligibility:latest
-docker run -d -p 8080:8080 --name opt-api rastadidi/optnc-fiber-eligibility
+podman run -d --network=host --name opt-api rastadidi/optnc-fiber-eligibility
 ```
+
+**⚠️ Important :** L'option `--network=host` est requise pour permettre à Chromium d'accéder au site OPT-NC.
 
 ### Build local
 

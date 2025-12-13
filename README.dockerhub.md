@@ -11,12 +11,14 @@
 ## 🎯 Quick Start
 
 ```bash
-# Démarrer l'API avec Podman
-podman run -d -p 8080:8080 --name opt-api rastadidi/optnc-fiber-eligibility
+# Démarrer l'API avec Podman (nécessite --network=host pour le scraping)
+podman run -d --network=host --name opt-api rastadidi/optnc-fiber-eligibility
 
 # Tester avec HTTPie
 http :8080/health
 ```
+
+**⚠️ Note importante :** L'option `--network=host` est requise pour permettre à Chromium d'accéder au site OPT-NC.
 
 ## 📚 Swagger UI
 
@@ -170,7 +172,7 @@ http GET :8080/api/v1/eligibility phone==257364 | \
 
 ```bash
 # Avec Podman
-podman run -d -p 9090:8080 --name opt-api rastadidi/optnc-fiber-eligibility
+podman run -d --network=host --name opt-api rastadidi/optnc-fiber-eligibility
 
 # L'API sera accessible sur le port 9090
 http GET :9090/health
@@ -180,16 +182,16 @@ http GET :9090/health
 
 ```bash
 # Vérifier un numéro en mode CLI
-podman run --rm rastadidi/optnc-fiber-eligibility 257364
+podman run --rm --network=host rastadidi/optnc-fiber-eligibility 257364
 
 # Format JSON
-podman run --rm rastadidi/optnc-fiber-eligibility 257364 --json
+podman run --rm --network=host rastadidi/optnc-fiber-eligibility 257364 --json
 ```
 
 ### Variables d'environnement
 
 ```bash
-podman run -d -p 8080:8080 \
+podman run -d --network=host \
   -e CHROMIUM_PATH=/usr/bin/chromium-browser \
   --name opt-api \
   rastadidi/optnc-fiber-eligibility
