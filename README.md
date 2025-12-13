@@ -9,6 +9,9 @@
 ![API](https://img.shields.io/badge/API-REST-blue?style=flat)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat)](./LICENSE)
 
+<img width="1032" height="885" alt="Screenshot_20251214_101303" src="https://github.com/user-attachments/assets/1bf5efed-554a-412d-8b97-716ca680c767" />
+
+
 **🚀 API REST de vérification d'éligibilité à la fibre optique OPT Nouvelle-Calédonie**
 
 📚 **[Documentation Swagger Interactive](http://localhost:8080/swagger/)** | 🐳 **[Docker Hub](https://hub.docker.com/r/rastadidi/optnc-fiber-eligibility)** | 🔧 **Taskfile**
