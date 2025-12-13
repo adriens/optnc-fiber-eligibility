@@ -10,21 +10,9 @@
 
 ## 🎯 Quick Start
 
-### Avec Podman
-
 ```bash
-# Démarrer l'API
+# Démarrer l'API avec Podman
 podman run -d -p 8080:8080 --name opt-api rastadidi/optnc-fiber-eligibility
-
-# Tester avec HTTPie
-http :8080/health
-```
-
-### Avec Docker
-
-```bash
-# Démarrer l'API
-docker run -d -p 8080:8080 --name opt-api rastadidi/optnc-fiber-eligibility
 
 # Tester avec HTTPie
 http :8080/health
