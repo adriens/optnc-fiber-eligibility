@@ -7,7 +7,7 @@
 ![Swagger](https://img.shields.io/badge/Swagger-OpenAPI_3.0-85EA2D?style=flat&logo=swagger)
 [![Alpine](https://img.shields.io/badge/Alpine-3.19-0D597F?style=flat&logo=alpine-linux)](https://alpinelinux.org/)
 ![API](https://img.shields.io/badge/API-REST-blue?style=flat)
-![License](https://img.shields.io/badge/License-MIT-green?style=flat)
+[![License](https://img.shields.io/badge/License-MIT-green?style=flat)](./LICENSE)
 
 **🚀 API REST de vérification d'éligibilité à la fibre optique OPT Nouvelle-Calédonie**
 
