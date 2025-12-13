@@ -14,10 +14,10 @@
 
 ```bash
 # Démarrer l'API
-podman run -d -p 8080:8080 --name optnc-eligibilite-fibre  rastadidi/optnc-fiber-eligibility
+podman run -d -p 8080:8080 --name opt-api rastadidi/optnc-fiber-eligibility
 
-# Tester
-curl http://localhost:8080/health
+# Tester avec HTTPie
+http :8080/health
 ```
 
 ### Avec Docker
@@ -26,8 +26,8 @@ curl http://localhost:8080/health
 # Démarrer l'API
 docker run -d -p 8080:8080 --name opt-api rastadidi/optnc-fiber-eligibility
 
-# Tester
-curl http://localhost:8080/health
+# Tester avec HTTPie
+http :8080/health
 ```
 
 ## 📚 Swagger UI
