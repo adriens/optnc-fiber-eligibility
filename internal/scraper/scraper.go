@@ -58,8 +58,13 @@ func (s *Scraper) CheckEligibility(phoneNumber string) (*models.EligibilityResul
 	err = chromedp.Run(ctx,
 		chromedp.Navigate("https://www.opt.nc/particuliers/telephonie-fixe/fibre-optique"),
 		chromedp.WaitVisible(`#edit-phone-number`, chromedp.ByQuery),
-		chromedp.SendKeys(`#edit-phone-number`, cleanedPhone, chromedp.ByQuery),
-		chromedp.Sleep(1*time.Second),
+		// Use JavaScript to set value and trigger events to bypass validation issues
+		chromedp.Evaluate(`
+			document.querySelector('#edit-phone-number').value = '`+cleanedPhone+`';
+			document.querySelector('#edit-phone-number').dispatchEvent(new Event('input', { bubbles: true }));
+			document.querySelector('#edit-phone-number').dispatchEvent(new Event('change', { bubbles: true }));
+		`, nil),
+		chromedp.Sleep(2*time.Second),
 		chromedp.Click(`#edit-gdpr`, chromedp.ByQuery),
 		chromedp.Sleep(1*time.Second),
 		chromedp.Click(`#edit-submit`, chromedp.ByQuery),
