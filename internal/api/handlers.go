@@ -116,6 +116,17 @@ func (s *Server) CheckEligibilityHandler(w http.ResponseWriter, r *http.Request)
 	if cachedResult, found := s.cache.Get(phoneNumber); found {
 		// Remove raw HTML from cached response
 		cachedResult.RawHTML = ""
+		
+		// If cached result is not found (404), return 404
+		if !cachedResult.Found {
+			w.WriteHeader(http.StatusNotFound)
+			json.NewEncoder(w).Encode(APIErrorResponse{
+				Error:   "not_found",
+				Message: cachedResult.ErrorMessage,
+			})
+			return
+		}
+		
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(APISuccessResponse{
 			Success:   true,
@@ -136,6 +147,9 @@ func (s *Server) CheckEligibilityHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	// Store in cache (even if not found - 404)
+	s.cache.Set(phoneNumber, result)
+
 	// If phone number not found in the database, return 404
 	if !result.Found {
 		w.WriteHeader(http.StatusNotFound)
@@ -145,9 +159,6 @@ func (s *Server) CheckEligibilityHandler(w http.ResponseWriter, r *http.Request)
 		})
 		return
 	}
-
-	// Store in cache
-	s.cache.Set(phoneNumber, result)
 
 	// Remove raw HTML from API response for cleaner output
 	result.RawHTML = ""
