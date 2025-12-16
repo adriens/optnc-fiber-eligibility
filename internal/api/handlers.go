@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"opt-nc-eligibilite/internal/cache"
 	"opt-nc-eligibilite/internal/models"
 	"opt-nc-eligibilite/internal/scraper"
 )
@@ -17,19 +18,22 @@ type APIErrorResponse struct {
 
 // APISuccessResponse représente une réponse de succès de l'API
 type APISuccessResponse struct {
-	Success bool                      `json:"success" example:"true"`
-	Data    *models.EligibilityResult `json:"data"`
+	Success   bool                      `json:"success" example:"true"`
+	Data      *models.EligibilityResult `json:"data"`
+	FromCache bool                      `json:"from_cache,omitempty" example:"false"`
 }
 
 // Server représente le serveur API
 type Server struct {
 	scraper *scraper.Scraper
+	cache   *cache.Cache
 }
 
-// NewServer crée un nouveau serveur API
-func NewServer(s *scraper.Scraper) *Server {
+// NewServer crée un nouveau serveur API avec cache
+func NewServer(s *scraper.Scraper, c *cache.Cache) *Server {
 	return &Server{
 		scraper: s,
+		cache:   c,
 	}
 }
 
@@ -108,7 +112,20 @@ func (s *Server) CheckEligibilityHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	// Check eligibility
+	// Check cache first
+	if cachedResult, found := s.cache.Get(phoneNumber); found {
+		// Remove raw HTML from cached response
+		cachedResult.RawHTML = ""
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(APISuccessResponse{
+			Success:   true,
+			Data:      cachedResult,
+			FromCache: true,
+		})
+		return
+	}
+
+	// Check eligibility via scraping
 	result, err := s.scraper.CheckEligibility(phoneNumber)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -129,12 +146,16 @@ func (s *Server) CheckEligibilityHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	// Store in cache
+	s.cache.Set(phoneNumber, result)
+
 	// Remove raw HTML from API response for cleaner output
 	result.RawHTML = ""
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(APISuccessResponse{
-		Success: true,
-		Data:    result,
+		Success:   true,
+		Data:      result,
+		FromCache: false,
 	})
 }

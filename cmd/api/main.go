@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"opt-nc-eligibilite/internal/api"
+	"opt-nc-eligibilite/internal/cache"
 	"opt-nc-eligibilite/internal/scraper"
 
 	_ "opt-nc-eligibilite/docs" // Swagger docs
@@ -41,6 +42,9 @@ func main() {
 	// Initialize scraper
 	scraperInstance := scraper.NewScraper(60 * time.Second)
 
+	// Initialize cache with 24h TTL
+	cacheInstance := cache.NewCache(24 * time.Hour)
+
 	// Check if running in API mode
 	if len(os.Args) > 1 && os.Args[1] == "api" {
 		port := "8080"
@@ -48,8 +52,8 @@ func main() {
 			port = os.Args[2]
 		}
 
-		// Initialize API server
-		server := api.NewServer(scraperInstance)
+		// Initialize API server with cache
+		server := api.NewServer(scraperInstance, cacheInstance)
 
 		// Setup routes with middleware
 		http.HandleFunc("/health", api.Logger(server.HealthHandler))
